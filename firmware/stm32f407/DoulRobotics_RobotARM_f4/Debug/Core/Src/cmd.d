@@ -42,7 +42,8 @@ Core/Src/cmd.o: ../Core/Src/cmd.c ../Core/Inc/cmd.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h \
- ../Core/Inc/trajectory.h ../Core/Inc/config.h
+ ../Core/Inc/trajectory.h ../Core/Inc/config.h ../Core/Inc/pd_control.h \
+ ../Core/Inc/axis.h
 ../Core/Inc/cmd.h:
 ../Core/Inc/RobStride_MIT.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -90,3 +91,5 @@ Core/Src/cmd.o: ../Core/Src/cmd.c ../Core/Inc/cmd.h \
 ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h:
 ../Core/Inc/trajectory.h:
 ../Core/Inc/config.h:
+../Core/Inc/pd_control.h:
+../Core/Inc/axis.h:

@@ -1,0 +1,8 @@
+../Core/Src/axis.c:27:7:axis_J2_RadToMm	16	static
+../Core/Src/axis.c:28:7:axis_J2_MmToRad	16	static
+../Core/Src/axis.c:29:7:axis_J2_RadpsToMmps	16	static
+../Core/Src/axis.c:36:6:axis_J2_Update	24	static
+../Core/Src/axis.c:60:6:axis_J2_ResetUnwrap	16	static
+../Core/Src/axis.c:68:7:axis_J2_GetContinuousRad	4	static
+../Core/Src/axis.c:69:7:axis_J2_GetContinuousMm	8	static
+../Core/Src/axis.c:76:7:axis_J2_WrapRadToMitRange	16	static

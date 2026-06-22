@@ -18,12 +18,15 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <pd_control.h>
 #include "main.h"
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "RobStride_MIT.h"
 #include "trajectory.h"
+#include "pd_control.h"
+#include "axis.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -280,27 +283,47 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         RS_CAN2_RxCallback(hcan);
 }
 
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM2)
     {
-        /* 1. 궤적 계산 (trajectory만) */
+        axis_J2_Update(RS_J2.feedback.Angle);
         traj_Update();
 
-        /* 2. 결과 읽어서 CAN 송신 (RobStride만) */
         for (int i = 0; i < MOTOR_COUNT; i++)
         {
-            if (!traj_IsActive(i)) continue;
+            float ref_pos, ref_vel;
+
+            if (traj_IsActive(i))
+            {
+                /* 궤적 진행 중: 궤적 따라가며 홀드 목표 갱신 */
+                ref_pos = traj_GetTargetPos(i);
+                ref_vel = traj_GetTargetVel(i);
+                pd_SetGoal(i, ref_pos);          /* ★ 홀드 목표 저장 */
+            }
+            else
+            {
+                /* 궤적 끝남: 마지막 목표 홀드 + 속도 0 */
+                if (!pd_HasGoal(i)) continue;    /* 명령 한 번도 없으면 skip */
+                ref_pos = pd_GetGoal(i);         /* ★ 홀드 목표 */
+                ref_vel = 0.0f;
+            }
+
+            /* 현재 위치: 외부PD는 연속각, 내부PD는 raw */
+            float cur_pos, cur_vel = RS_Motors[i]->feedback.Speed;
+            if (pd_GetMode(i) == PD_MODE_EXTERNAL)
+                cur_pos = axis_J2_GetContinuousRad();
+            else
+                cur_pos = RS_Motors[i]->feedback.Angle;
+
+            PDOutput_t out;
+            pd_Compute(i, ref_pos, ref_vel, cur_pos, cur_vel, &out);
 
             RS_MIT_Control(RS_Motors[i],
-                           traj_GetTargetPos(i),
-                           traj_GetTargetVel(i),
-                           traj_GetKp(i),
-                           traj_GetKd(i),
-                           0.0f);
+                           out.pos, out.vel, out.kp, out.kd, out.torque);
 
-            /* 3. 끝점 송신 후 종료 처리 */
-            if (traj_IsFinished(i))
+            if (traj_IsActive(i) && traj_IsFinished(i))
                 traj_Stop(i);
         }
     }

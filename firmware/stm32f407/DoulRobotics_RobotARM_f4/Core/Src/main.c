@@ -33,6 +33,7 @@
 #include "RobStride_Mit.h"
 #include "cmd.h"
 #include "trajectory.h"
+#include "pd_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -134,6 +135,7 @@ int main(void)
   
   config_Init();
   cmd_Init();
+  pd_Init();
   HAL_Delay(1000);
 
   char *msg = "Robstaride MIT Ready\r\n";

@@ -1,8 +1,8 @@
-../Core/Src/cmd.c:47:12:RS_GetIndex	16	static
-../Core/Src/cmd.c:58:6:cmd_Init	8	static
-../Core/Src/cmd.c:67:6:cmd_SetAutoPrint	16	static
-../Core/Src/cmd.c:77:6:cmd_RxPush	24	static
-../Core/Src/cmd.c:94:13:cmd_CAN_Diagnostic	352	static
-../Core/Src/cmd.c:142:13:cmd_ProcessLine	488	static
-../Core/Src/cmd.c:299:13:cmd_DrainRing	16	static
-../Core/Src/cmd.c:331:6:cmd_Update	312	static
+../Core/Src/cmd.c:49:12:RS_GetIndex	16	static
+../Core/Src/cmd.c:60:6:cmd_Init	8	static
+../Core/Src/cmd.c:69:6:cmd_SetAutoPrint	16	static
+../Core/Src/cmd.c:79:6:cmd_RxPush	24	static
+../Core/Src/cmd.c:96:13:cmd_CAN_Diagnostic	352	static
+../Core/Src/cmd.c:144:13:cmd_ProcessLine	560	static
+../Core/Src/cmd.c:331:13:cmd_DrainRing	16	static
+../Core/Src/cmd.c:363:6:cmd_Update	360	static

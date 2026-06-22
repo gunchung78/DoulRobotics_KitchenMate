@@ -1,0 +1,11 @@
+../Core/Src/pd_control.c:26:14:clampf	24	static
+../Core/Src/pd_control.c:33:6:pd_Init	16	static
+../Core/Src/pd_control.c:45:6:pd_SetGoal	16	static
+../Core/Src/pd_control.c:52:7:pd_GetGoal	16	static
+../Core/Src/pd_control.c:58:9:pd_HasGoal	16	static
+../Core/Src/pd_control.c:67:6:pd_Compute	48	static
+../Core/Src/pd_control.c:110:6:pd_SetMode	16	static
+../Core/Src/pd_control.c:116:6:pd_SetGains	24	static
+../Core/Src/pd_control.c:123:6:pd_SetTorqueLimit	16	static
+../Core/Src/pd_control.c:129:6:pd_SetBaseTorque	16	static
+../Core/Src/pd_control.c:135:15:pd_GetMode	16	static

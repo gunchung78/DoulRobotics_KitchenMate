@@ -1,14 +1,6 @@
 //###########################################################################
 // FILE:    config.h
 // TITLE:   튜닝/설정 파라미터 중앙 관리
-//          STM32F407G-DISC1 / CubeIDE
-//
-// 여기 모으는 것: 자주 수정하는 튜닝값 (게인, 주기, 각도제한, 궤적 등)
-// 여기 두지 않는 것: 모터 종류/CAN ID  -> RobStride_MIT 에서 관리
-//
-// 사용법:
-//   - 컴파일 타임 고정값: 아래 #define 수정
-//   - 런타임 튜닝값(게인 등): g_axis_cfg 구조체 (config.c) + UART 명령
 //###########################################################################
 
 #ifndef __CONFIG_H__
@@ -21,47 +13,77 @@ extern "C" {
 #include <stdint.h>
 
 /* =========================================================
+ * 모터 설정
+ * ========================================================= */
+#define MOTOR_COUNT         3
+
+#define TWO_PI_F   6.2831853071795864769f
+ 
+/* ★ 메커니즘: 1회전 = 5mm */
+#define AXIS_J2_MM_PER_REV   75.0f
+#define AXIS_J2_MM_PER_RAD   (AXIS_J2_MM_PER_REV / TWO_PI_F)
+ 
+/* MIT 위치 범위 */
+#define MIT_POS_MIN   (-12.57f)
+#define MIT_POS_MAX   ( 12.57f)
+#define MIT_POS_RANGE (MIT_POS_MAX - MIT_POS_MIN)
+ 
+/* wrap 판정 임계 (한 샘플에 범위의 45% 이상 점프하면 wrap) */
+#define WRAP_THRESHOLD (MIT_POS_RANGE * 0.45f)
+
+/* =========================================================
  * 제어 주기
  * ========================================================= */
-#define CTRL_PERIOD_MS      5       /* TIM2 제어/송신 주기 (ms) */
-#define CTRL_DT             (CTRL_PERIOD_MS * 0.001f)
-
-#define PRINT_PERIOD_MS     100     /* 피드백 출력 주기 (ms) */
+#define CTRL_PERIOD_MS      5                          /* TIM2 주기 (ms) */
+#define CTRL_DT             (CTRL_PERIOD_MS * 0.001f)  /* 초 단위 자동계산 */
+#define PRINT_PERIOD_MS     100                        /* 출력 주기 (ms) */
 
 /* =========================================================
  * 통신 버퍼 크기
  * ========================================================= */
-#define RX_RING_SIZE        512     /* UART 수신 링버퍼 (2^n 권장) */
-#define CMD_LINE_SIZE       128     /* 명령 한 줄 최대 길이 */
+#define RX_RING_SIZE        512
+#define CMD_LINE_SIZE       128
 
 /* =========================================================
  * 궤적 기본값
  * ========================================================= */
-#define TRAJ_DEFAULT_TIME   2.0f    /* MOVE 시간 미지정 시 기본 (s) */
-#define TRAJ_MIN_TIME       0.3f    /* 너무 짧은 시간 방지 (s) */
+#define TRAJ_DEFAULT_TIME   2.0f
+#define TRAJ_MIN_TIME       0.3f
+
+/* =========================================================
+ * PD 제어 모드
+ *   INTERNAL : 모터 펌웨어가 PD (위치+Kp/Kd 송신) — 회전 관절 J0,J1
+ *   EXTERNAL : STM32가 PD 계산해 토크만 송신 — 슬라이드 관절 J2
+ * ========================================================= */
+typedef enum {
+    PD_MODE_INTERNAL = 0,
+    PD_MODE_EXTERNAL = 1
+} PDControlMode;
 
 /* =========================================================
  * 축별 런타임 설정 구조체
- *  - 게인(kp,kd) : 튜닝하면서 자주 변경  -> UART GAIN 명령으로 덮어쓰기
- *  - 각도제한(q_min,q_max) : 안전 한계 (rad)
- *  나중에 항목 추가 시 여기에 필드만 늘리면 됨
+ *   - kp/kd       : 내부PD면 MIT 게인, 외부PD면 토크 PD 게인
+ *   - q_min/q_max : 각도 제한 (rad)
+ *   - mode        : 내부/외부 PD
+ *   - base_torque : 외부PD feedforward 토크 (Nm)
+ *   - torque_limit: 외부PD 토크 제한 (Nm)
  * ========================================================= */
-/* 3축 설정 */
-#define MOTOR_COUNT 3
-
 typedef struct {
-    float kp;        /* MIT 위치 게인 */
-    float kd;        /* MIT 속도 게인 */
-    float q_min;     /* 최소 각도 (rad) */
-    float q_max;     /* 최대 각도 (rad) */
-    /* TODO: 추후 추가 (예: 속도제한, 토크제한 등) */
+    float          kp;
+    float          kd;
+    float          q_min;
+    float          q_max;
+    PDControlMode  mode;
+    float          base_torque;
+    float          torque_limit;
 } AxisConfig_t;
+
 extern AxisConfig_t g_axis_cfg[MOTOR_COUNT];
 
 /* =========================================================
  * 초기화
  * ========================================================= */
-void config_Init(void);   /* g_axis_cfg를 기본값으로 로드 */
+void config_Init(void);
 
 #ifdef __cplusplus
 }

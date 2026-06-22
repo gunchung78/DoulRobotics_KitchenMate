@@ -9,12 +9,14 @@
 //   - 응답 출력(CDC_Transmit_FS)은 메인 루프에서만 → USB 충돌 방지
 //###########################################################################
 
-#include "cmd.h"
-#include "usbd_cdc_if.h"
-#include "trajectory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "cmd.h"
+#include "usbd_cdc_if.h"
+#include "trajectory.h"
+#include "pd_control.h"
+#include "axis.h"
 
 /* =========================================================
  * 목표값 저장소
@@ -149,10 +151,14 @@ static void cmd_ProcessLine(char* line)
         snprintf(reply, sizeof(reply),
             "J0: A=%.2f V=%.2f T=%.2f\r\n"
             "J1: A=%.2f V=%.2f T=%.2f\r\n"
-            "J2: A=%.2f V=%.2f T=%.2f\r\n",
+            "J2: A=%.2f V=%.2f T=%.2f\r\n"
+            "J2: A=%.2fmm  V=%.2fmm/s T=%.2f\r\n",
             RS_J0.feedback.Angle, RS_J0.feedback.Speed, RS_J0.feedback.Torque,
             RS_J1.feedback.Angle, RS_J1.feedback.Speed, RS_J1.feedback.Torque,
-            RS_J2.feedback.Angle, RS_J2.feedback.Speed, RS_J2.feedback.Torque);
+            RS_J2.feedback.Angle, RS_J2.feedback.Speed, RS_J2.feedback.Torque,
+            axis_J2_GetContinuousMm(),
+            axis_J2_RadpsToMmps(RS_J2.feedback.Speed),
+            RS_J2.feedback.Torque);
         CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
         return;
     }
@@ -182,26 +188,34 @@ static void cmd_ProcessLine(char* line)
     }
 
     /* ---- MOVE: 3축 동시 궤적 ----
-    "MOVE qf0 qf1 qf2 T"  예: MOVE 1.57 0.5 -0.3 2.0 */
+    "MOVE q0_rad q1_rad j2_mm T"
+    예: MOVE 1.0 0.5 10 2  → J0=1.0rad, J1=0.5rad, J2=10mm, 2초 */
     if (strncmp(line, "MOVE", 4) == 0)
     {
-        float qf0, qf1, qf2, T;
-        if (sscanf(line + 4, "%f %f %f %f", &qf0, &qf1, &qf2, &T) == 4)
+        float q0_rad, q1_rad, j2_mm, T;
+        if (sscanf(line + 4, "%f %f %f %f", &q0_rad, &q1_rad, &j2_mm, &T) == 4)
         {
-            /* 현재 피드백 각도를 시작점으로 */
-            float q0[3] = { RS_J0.feedback.Angle,
-                            RS_J1.feedback.Angle,
-                            RS_J2.feedback.Angle };
-            float qf[3] = { qf0, qf1, qf2 };
-            traj_StartAll(q0, qf, T);
+            /* J2: mm → 연속각(rad) 변환 */
+            float j2_rad = axis_J2_MmToRad(j2_mm);
+
+            /* 시작점: J0/J1은 raw 피드백, J2는 연속각 */
+            float start[3] = {
+                RS_J0.feedback.Angle,
+                RS_J1.feedback.Angle,
+                axis_J2_GetContinuousRad()
+            };
+            float goal[3] = { q0_rad, q1_rad, j2_rad };
+
+            traj_StartAll(start, goal, T);
 
             snprintf(reply, sizeof(reply),
-                "MOVE: qf=(%.2f %.2f %.2f) T=%.1f\r\n", qf0, qf1, qf2, T);
+                "MOVE: J0=%.2frad J1=%.2frad J2=%.1fmm(%.3frad) T=%.1f\r\n",
+                q0_rad, q1_rad, j2_mm, j2_rad, T);
         }
         else
         {
             snprintf(reply, sizeof(reply),
-                "ERR: Usage: MOVE <qf0> <qf1> <qf2> <T>\r\n");
+                "ERR: Usage: MOVE <j0_rad> <j1_rad> <j2_mm> <T>\r\n");
         }
         CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
         return;
@@ -226,6 +240,20 @@ static void cmd_ProcessLine(char* line)
         RS_MIT_Disable(&RS_J1);
         RS_MIT_Disable(&RS_J2);
         snprintf(reply, sizeof(reply), "All motors Disable OK\r\n");
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+
+    /* "PD axis kp kd"  예: PD 2 7.5 1.5 */
+    if (strncmp(line, "PD", 2) == 0)
+    {
+        int axis; float kp, kd;
+        if (sscanf(line + 2, "%d %f %f", &axis, &kp, &kd) == 3)
+        {
+            pd_SetGains(axis, kp, kd);
+            snprintf(reply, sizeof(reply), "PD J%d: kp=%.2f kd=%.2f\r\n", axis, kp, kd);
+        }
+        else snprintf(reply, sizeof(reply), "ERR: PD <axis> <kp> <kd>\r\n");
         CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
         return;
     }
@@ -258,6 +286,14 @@ static void cmd_ProcessLine(char* line)
     else if (*p == 'Z')   /* Set Zero */
     {
         RS_MIT_SetZeroPos(motor);
+        if (motor == &RS_J2) {
+            uint32_t cnt = g_rx_callback_count;
+            uint32_t t0 = HAL_GetTick();
+            while (g_rx_callback_count == cnt && (HAL_GetTick()-t0) < 20) {}
+
+            axis_J2_ResetUnwrap(RS_J2.feedback.Angle);
+            pd_SetGoal(2, axis_J2_GetContinuousRad());
+        }
         snprintf(reply, sizeof(reply), "%s SetZero OK\r\n", line);
     }
     else if (*p == 'C')   /* MIT Control 목표값 설정 */
@@ -343,12 +379,16 @@ void cmd_Update(void)
 
         char buf[160];
         int len = snprintf(buf, sizeof(buf),
-            "J0:A=%.2f V=%.2f T=%.1f | "
-            "J1:A=%.2f V=%.2f T=%.1f | "
-            "J2:A=%.2f V=%.2f T=%.1f\r\n",
+            "J0: A=%.2f V=%.2f T=%.2f\r\n"
+            "J1: A=%.2f V=%.2f T=%.2f\r\n"
+            "J2: A=%.2f V=%.2f T=%.2f\r\n"
+            "J2: A=%.2fmm  V=%.2fmm/s T=%.2f\r\n",
             RS_J0.feedback.Angle, RS_J0.feedback.Speed, RS_J0.feedback.Torque,
             RS_J1.feedback.Angle, RS_J1.feedback.Speed, RS_J1.feedback.Torque,
-            RS_J2.feedback.Angle, RS_J2.feedback.Speed, RS_J2.feedback.Torque);
+            RS_J2.feedback.Angle, RS_J2.feedback.Speed, RS_J2.feedback.Torque,
+            axis_J2_GetContinuousMm(),
+            axis_J2_RadpsToMmps(RS_J2.feedback.Speed),
+            RS_J2.feedback.Torque);
 
         CDC_Transmit_FS((uint8_t*)buf, len);
     }

@@ -1,0 +1,1420 @@
+<?xml version="1.0" ?>
+<!-- Generated using onshape-to-robot -->
+<!-- Onshape https://cad.onshape.com/documents/0afe0e0e0d35900908b6979d/w/4c2ef276c637390459607808/e/e09976a6752d4a7034f0eba9 -->
+<robot name="doulrobot">
+  <!-- Link x_linear_motor -->
+  <link name="x_linear_motor">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-09"/>
+      <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09"/>
+    </inertial>
+    <!-- Part cover_joint0_1_rev03 -->
+    <visual>
+      <origin xyz="-0.728739 -0.0108378 -0.0749598" rpy="1e-12 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint0_1_rev03.stl"/>
+      </geometry>
+      <material name="cover_joint0_1_rev03_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.728739 -0.0108378 -0.0749598" rpy="1e-12 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint0_1_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part rs02_2 -->
+    <visual>
+      <origin xyz="-0.742239 0.0432439 -0.0721444" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/rs02_2.stl"/>
+      </geometry>
+      <material name="rs02_2_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.742239 0.0432439 -0.0721444" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/rs02_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_joint0_plate2_1_rev04 -->
+    <visual>
+      <origin xyz="-0.0557393 -0.0108398 -0.0299808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint0_plate2_1_rev04.stl"/>
+      </geometry>
+      <material name="cover_joint0_plate2_1_rev04_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0557393 -0.0108398 -0.0299808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint0_plate2_1_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02 -->
+    <visual>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part body_brkt_2_rev02 -->
+    <visual>
+      <origin xyz="-0.0967393 -0.0140898 -0.0749808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/body_brkt_2_rev02.stl"/>
+      </geometry>
+      <material name="body_brkt_2_rev02_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0967393 -0.0140898 -0.0749808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/body_brkt_2_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part body_brkt_1_rev02 -->
+    <visual>
+      <origin xyz="-0.677489 -0.00993978 -0.0749808" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/body_brkt_1_rev02.stl"/>
+      </geometry>
+      <material name="body_brkt_1_rev02_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.677489 -0.00993978 -0.0749808" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/body_brkt_1_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_2 -->
+    <visual>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_3 -->
+    <visual>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__2.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_3_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_4 -->
+    <visual>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__3.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_4_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__3.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_5 -->
+    <visual>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__4.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_5_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__4.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_6 -->
+    <visual>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__3.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_6_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__3.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김기_커버_rev02 -->
+    <visual>
+      <origin xyz="-0.361739 0.30416 -0.224981" rpy="1e-12 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김기_커버_rev02.stl"/>
+      </geometry>
+      <material name="튀김기_커버_rev02_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.361739 0.30416 -0.224981" rpy="1e-12 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김기_커버_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_7 -->
+    <visual>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__2.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_7_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_8 -->
+    <visual>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__5.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_8_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.28616 -0.269981" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__5.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_9 -->
+    <visual>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__4.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_9_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__4.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part 튀김망_rev02_10 -->
+    <visual>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__5.stl"/>
+      </geometry>
+      <material name="튀김망_rev02_10_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.286124 -0.0544673" rpy="-1e-12 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/튀김망_rev02__5.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part linear_body_motor_brkt -->
+    <visual>
+      <origin xyz="-0.709739 -0.0108398 -0.0319808" rpy="-0 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_body_motor_brkt.stl"/>
+      </geometry>
+      <material name="linear_body_motor_brkt_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.709739 -0.0108398 -0.0319808" rpy="-0 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_body_motor_brkt.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part linear_body_2 -->
+    <visual>
+      <origin xyz="-0.393739 -0.0108398 -0.0749808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_body_2.stl"/>
+      </geometry>
+      <material name="linear_body_2_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.393739 -0.0108398 -0.0749808" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_body_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part linear_cover_2 -->
+    <visual>
+      <origin xyz="-0.698739 -0.0108398 -0.0127808" rpy="-0 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_cover_2.stl"/>
+      </geometry>
+      <material name="linear_cover_2_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.698739 -0.0108398 -0.0127808" rpy="-0 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_cover_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part guide_2 -->
+    <visual>
+      <origin xyz="-0.26768 0.135909 -0.282053" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_2.stl"/>
+      </geometry>
+      <material name="guide_2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.135909 -0.282053" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part guide_1 -->
+    <visual>
+      <origin xyz="-0.26768 0.136162 -0.260454" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_1.stl"/>
+      </geometry>
+      <material name="guide_1_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.26768 0.136162 -0.260454" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_1.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part guide_2_2 -->
+    <visual>
+      <origin xyz="-0.68989 0.135873 -0.066539" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_2.stl"/>
+      </geometry>
+      <material name="guide_2_2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.135873 -0.066539" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part guide_1_2 -->
+    <visual>
+      <origin xyz="-0.68989 0.136127 -0.0449403" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_1.stl"/>
+      </geometry>
+      <material name="guide_1_2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.68989 0.136127 -0.0449403" rpy="-0.104283 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/guide_1.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_guide -->
+    <visual>
+      <origin xyz="-0.689918 0.27586 -0.201883" rpy="-1e-12 -0.165806 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_guide.stl"/>
+      </geometry>
+      <material name="basket_guide_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.689918 0.27586 -0.201883" rpy="-1e-12 -0.165806 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_guide.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_2 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__2.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_2_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_3 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__3.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_3_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__3.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_4 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__4.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_4_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__4.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_5 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__5.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_5_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__5.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_6 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__6.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_6_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__6.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_7 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__7.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_7_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__7.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_8 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__8.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_8_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__8.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_9 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__9.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_9_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__9.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_10 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__10.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_10_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__10.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_11 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__11.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_11_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__11.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_12 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__12.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_12_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__12.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_13 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__13.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_13_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__13.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_14 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__14.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_14_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__14.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_15 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__15.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_15_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__15.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_16 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__16.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_16_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__16.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_17 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__17.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_17_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__17.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_18 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__18.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_18_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__18.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_pallet -->
+    <visual>
+      <origin xyz="-0.688425 0.29586 -0.173714" rpy="1e-12 -0 -0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_pallet.stl"/>
+      </geometry>
+      <material name="basket_net_pallet_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.29586 -0.173714" rpy="1e-12 -0 -0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_pallet.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_19 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__19.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_19_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__19.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_20 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__20.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_20_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__20.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_21 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__21.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_21_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__21.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_22 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__22.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_22_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__22.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_23 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__23.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_23_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__23.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_24 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__24.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_24_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__24.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_25 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__25.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_25_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__25.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part basket_net_2_rev02_26 -->
+    <visual>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__26.stl"/>
+      </geometry>
+      <material name="basket_net_2_rev02_26_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.688425 0.27586 -0.181214" rpy="0 1e-12 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/basket_net_2_rev02__26.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link joint1_rev05 -->
+  <link name="joint1_rev05">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-09"/>
+      <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09"/>
+    </inertial>
+    <!-- Part cover_joint1_rev07 -->
+    <visual>
+      <origin xyz="-0.0086 -0.093 0.18" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint1_rev07.stl"/>
+      </geometry>
+      <material name="cover_joint1_rev07_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0086 -0.093 0.18" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint1_rev07.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part linear_carrioript_2 -->
+    <visual>
+      <origin xyz="0 0 0" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_carrioript_2.stl"/>
+      </geometry>
+      <material name="linear_carrioript_2_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/linear_carrioript_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part base_plate_1_rev04 -->
+    <visual>
+      <origin xyz="-0.028 -0.032 0.03" rpy="1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/base_plate_1_rev04.stl"/>
+      </geometry>
+      <material name="base_plate_1_rev04_material">
+        <color rgba="0.74902 0.74902 0.74902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.028 -0.032 0.03" rpy="1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/base_plate_1_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part motor_jig4_rev03 -->
+    <visual>
+      <origin xyz="-0.0086 -0.093 0.1272" rpy="-3.14159 0 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/motor_jig4_rev03.stl"/>
+      </geometry>
+      <material name="motor_jig4_rev03_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0086 -0.093 0.1272" rpy="-3.14159 0 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/motor_jig4_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bchaj18_b -->
+    <visual>
+      <origin xyz="-0.0086 -0.032 0.008" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/bchaj18_b.stl"/>
+      </geometry>
+      <material name="bchaj18_b_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0086 -0.032 0.008" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/bchaj18_b.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part bchaj18_mb -->
+    <visual>
+      <origin xyz="-0.0086 -0.032 0.008" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/bchaj18_mb.stl"/>
+      </geometry>
+      <material name="bchaj18_mb_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0086 -0.032 0.008" rpy="-0 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/bchaj18_mb.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link joint2_rev06 -->
+  <link name="joint2_rev06">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-09"/>
+      <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09"/>
+    </inertial>
+    <!-- Part cover_joint2_supporter2_rev03 -->
+    <visual>
+      <origin xyz="0 -0 -0.004" rpy="-3.14159 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_supporter2_rev03.stl"/>
+      </geometry>
+      <material name="cover_joint2_supporter2_rev03_material">
+        <color rgba="0.74902 0.74902 0.74902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0 -0.004" rpy="-3.14159 -0 1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_supporter2_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_joint2_a_rev07 -->
+    <visual>
+      <origin xyz="-0 0 -0.0311" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_a_rev07.stl"/>
+      </geometry>
+      <material name="cover_joint2_a_rev07_material">
+        <color rgba="0.74902 0.74902 0.74902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0 -0.0311" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_a_rev07.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part shaft_5_rev04 -->
+    <visual>
+      <origin xyz="-0 -0.2987 -0.17835" rpy="-1.5708 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/shaft_5_rev04.stl"/>
+      </geometry>
+      <material name="shaft_5_rev04_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.2987 -0.17835" rpy="-1.5708 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/shaft_5_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover2_joint2 -->
+    <visual>
+      <origin xyz="-0 0 -0.1596" rpy="3.14159 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover2_joint2.stl"/>
+      </geometry>
+      <material name="cover2_joint2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0 -0.1596" rpy="3.14159 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover2_joint2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_link_1_2 -->
+    <visual>
+      <origin xyz="-0 -0.3427 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_2.stl"/>
+      </geometry>
+      <material name="cover_link_1_2_material">
+        <color rgba="0.752941 0.752941 0.752941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.3427 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_link_1_1_rev02 -->
+    <visual>
+      <origin xyz="-0 -0.334 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_1_rev02.stl"/>
+      </geometry>
+      <material name="cover_link_1_1_rev02_material">
+        <color rgba="0.752941 0.752941 0.752941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.334 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_1_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_joint2_rev07 -->
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 0 -0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_rev07.stl"/>
+      </geometry>
+      <material name="cover_joint2_rev07_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 0 -0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint2_rev07.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_link_1_rev02 -->
+    <visual>
+      <origin xyz="-0 -0.334 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_rev02.stl"/>
+      </geometry>
+      <material name="cover_link_1_rev02_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.334 -0.1151" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover -->
+    <visual>
+      <origin xyz="-0 -0.2987 -0.1656" rpy="-1.5708 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover.stl"/>
+      </geometry>
+      <material name="cover_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.2987 -0.1656" rpy="-1.5708 0 3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_link_1_4_rev02 -->
+    <visual>
+      <origin xyz="-0 -0.2987 -0.1436" rpy="-3.14159 0 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_4_rev02.stl"/>
+      </geometry>
+      <material name="cover_link_1_4_rev02_material">
+        <color rgba="0.752941 0.752941 0.752941 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 -0.2987 -0.1436" rpy="-3.14159 0 -1.5708"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_link_1_4_rev02.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link joint3_rev04 -->
+  <link name="joint3_rev04">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-09"/>
+      <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09"/>
+    </inertial>
+    <!-- Part gripper_adapter_spacer_1_rev02 -->
+    <visual>
+      <origin xyz="-0 0.255 -0.0395" rpy="1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_spacer_1_rev02.stl"/>
+      </geometry>
+      <material name="gripper_adapter_spacer_1_rev02_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0.255 -0.0395" rpy="1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_spacer_1_rev02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part joint3_1_rev03 -->
+    <visual>
+      <origin xyz="-0 0.081 -0.0395" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/joint3_1_rev03.stl"/>
+      </geometry>
+      <material name="joint3_1_rev03_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0.081 -0.0395" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/joint3_1_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_joint3_2_rev04 -->
+    <visual>
+      <origin xyz="-0 0 -0.022" rpy="-0 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint3_2_rev04.stl"/>
+      </geometry>
+      <material name="cover_joint3_2_rev04_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0 -0.022" rpy="-0 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint3_2_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part joint3_2_rev03 -->
+    <visual>
+      <origin xyz="-0 0.081 -0.0395" rpy="1.5708 1e-12 1e-12"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/joint3_2_rev03.stl"/>
+      </geometry>
+      <material name="joint3_2_rev03_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0.081 -0.0395" rpy="1.5708 1e-12 1e-12"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/joint3_2_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_adapter_rev04 -->
+    <visual>
+      <origin xyz="-0 0.242 -0.0395" rpy="1.5708 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_rev04.stl"/>
+      </geometry>
+      <material name="gripper_adapter_rev04_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0.242 -0.0395" rpy="1.5708 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_adapter_spacer_1 -->
+    <visual>
+      <origin xyz="-0 0.247 -0.0395" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_spacer_1.stl"/>
+      </geometry>
+      <material name="gripper_adapter_spacer_1_material">
+        <color rgba="0.866667 0.909804 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0 0.247 -0.0395" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_spacer_1.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_2_rev04 -->
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_2_rev04.stl"/>
+      </geometry>
+      <material name="cover_2_rev04_material">
+        <color rgba="0.498039 0.498039 0.498039 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5708 -0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_2_rev04.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part cover_joint3_5_re02 -->
+    <visual>
+      <origin xyz="0 -0.039 -0.0395" rpy="-1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint3_5_re02.stl"/>
+      </geometry>
+      <material name="cover_joint3_5_re02_material">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.039 -0.0395" rpy="-1.5708 0 -3.14159"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/cover_joint3_5_re02.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_adapter_1 -->
+    <visual>
+      <origin xyz="0.000191918 0.266552 -0.0395" rpy="-1.5708 0 -2.8771"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_1.stl"/>
+      </geometry>
+      <material name="gripper_adapter_1_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.000191918 0.266552 -0.0395" rpy="-1.5708 0 -2.8771"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_adapter_1.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_brkt_cover_2 -->
+    <visual>
+      <origin xyz="-0.0222576 0.323048 -0.0395" rpy="1.83528 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_cover_2.stl"/>
+      </geometry>
+      <material name="gripper_brkt_cover_2_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0222576 0.323048 -0.0395" rpy="1.83528 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_cover_2.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_guide_pin_rev03 -->
+    <visual>
+      <origin xyz="-0.0171399 0.315628 -0.0208" rpy="1.5708 -1.32241 -2.8771"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_guide_pin_rev03.stl"/>
+      </geometry>
+      <material name="gripper_guide_pin_rev03_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0171399 0.315628 -0.0208" rpy="1.5708 -1.32241 -2.8771"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_guide_pin_rev03.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_brkt_1_rev05 -->
+    <visual>
+      <origin xyz="-0.0175843 0.332187 -0.0395" rpy="1.30631 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_1_rev05.stl"/>
+      </geometry>
+      <material name="gripper_brkt_1_rev05_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0175843 0.332187 -0.0395" rpy="1.30631 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_1_rev05.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_brkt_cover -->
+    <visual>
+      <origin xyz="0.00418956 0.330211 -0.0395" rpy="1.30631 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_cover.stl"/>
+      </geometry>
+      <material name="gripper_brkt_cover_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.00418956 0.330211 -0.0395" rpy="1.30631 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_cover.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_brkt_2_rev06 -->
+    <visual>
+      <origin xyz="-0.00801854 0.318098 -0.0395" rpy="-1.30631 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_2_rev06.stl"/>
+      </geometry>
+      <material name="gripper_brkt_2_rev06_material">
+        <color rgba="0.894118 0.894118 0.894118 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.00801854 0.318098 -0.0395" rpy="-1.30631 -1.5708 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_brkt_2_rev06.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part gripper_guide_pin_rev03_2 -->
+    <visual>
+      <origin xyz="-0.0171399 0.315628 -0.0582" rpy="-1.5708 -1.55009 0.264488"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_guide_pin_rev03.stl"/>
+      </geometry>
+      <material name="gripper_guide_pin_rev03_2_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0171399 0.315628 -0.0582" rpy="-1.5708 -1.55009 0.264488"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/gripper_guide_pin_rev03.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Frame tcp (dummy link + fixed joint) -->
+  <link name="tcp">
+    <origin xyz="0 0 0" rpy="0 -0 0"/>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-9"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+  </link>
+  <joint name="tcp_frame" type="fixed">
+    <origin xyz="-0.0216302 0.308299 -0.0395" rpy="-1.83528 1.5708 0"/>
+    <parent link="joint3_rev04"/>
+    <child link="tcp"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  <!-- Link mini_lock_body_pin_rev04_mini_lock_body_pin_rev02 -->
+  <link name="mini_lock_body_pin_rev04_mini_lock_body_pin_rev02">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1e-09"/>
+      <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09"/>
+    </inertial>
+    <!-- Part mini_lock_body_pin_rev04_mini_lock_body_pin_rev02 -->
+    <visual>
+      <origin xyz="0.007 -0 -0.0055" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/mini_lock_body_pin_rev04_mini_lock_body_pin_rev02.stl"/>
+      </geometry>
+      <material name="mini_lock_body_pin_rev04_mini_lock_body_pin_rev02_material">
+        <color rgba="0.776471 0.756863 0.737255 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.007 -0 -0.0055" rpy="-1.5708 0 0"/>
+      <geometry>
+        <mesh filename="package://my_robot_description/assets/mini_lock_body_pin_rev04_mini_lock_body_pin_rev02.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from joint3_rev04 to mini_lock_body_pin_rev04_mini_lock_body_pin_rev02 -->
+  <joint name="sol" type="prismatic">
+    <origin xyz="-0.0140693 0.331067 -0.0395" rpy="-1.5708 0 -1.30631"/>
+    <parent link="joint3_rev04"/>
+    <child link="mini_lock_body_pin_rev04_mini_lock_body_pin_rev02"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-0.01" upper="0"/>
+  </joint>
+  <!-- Joint from joint2_rev06 to joint3_rev04 -->
+  <joint name="l2" type="revolute">
+    <origin xyz="-0 -0.2987 -0.1656" rpy="0 0 3.14159"/>
+    <parent link="joint2_rev06"/>
+    <child link="joint3_rev04"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-3.14159" upper="3.14159"/>
+  </joint>
+  <!-- Joint from joint1_rev05 to joint2_rev06 -->
+  <joint name="l1" type="revolute">
+    <origin xyz="-0.0086 -0.093 0.1242" rpy="0 -0 0"/>
+    <parent link="joint1_rev05"/>
+    <child link="joint2_rev06"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.8326" upper="1.8326"/>
+  </joint>
+  <!-- Joint from x_linear_motor to joint1_rev05 -->
+  <joint name="slider" type="prismatic">
+    <origin xyz="-0.645739 -0.0108398 -0.0319808" rpy="-1.5708 1e-12 -1.5708"/>
+    <parent link="x_linear_motor"/>
+    <child link="joint1_rev05"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-0" upper="0.5"/>
+  </joint>
+</robot>
