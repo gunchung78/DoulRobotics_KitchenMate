@@ -1,17 +1,22 @@
-# DoulRobotics KitchenMate
-
-Robot arm control project.
+# DoulRobotics KitchenMate RobotARM
 
 ## Versions
 
-### ESP32 Arduino
-Path: firmware/esp32_arduino
+### 1. ESP32 Arduino Version
+초기 RobStride MIT 제어 테스트 버전.
 
-### STM32F407
-Path: firmware/stm32_f407
+Path:
+firmware/esp32_arduino/
 
-### STM32F407 + SBC
-Path: firmware/stm32_f407_sbc
+### 2. STM32F407 Version
+STM32F407 기반 CAN2 + USB CDC 제어 버전.
+
+Path:
+firmware/stm32_f407/
+
+### 3. STM32 + SBC Version
+STM32는 실시간 모터 제어, SBC는 상위 제어/UI/통신 담당.
+
 
 ## Motor IDs
 
