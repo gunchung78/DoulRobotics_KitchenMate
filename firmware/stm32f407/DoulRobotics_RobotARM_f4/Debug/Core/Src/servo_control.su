@@ -1,0 +1,10 @@
+../Core/Src/servo_control.c:42:6:Servo_Init	8	static
+../Core/Src/servo_control.c:61:6:Servo_SetAngle	32	static
+../Core/Src/servo_control.c:89:6:Servo_SetMode	32	static
+../Core/Src/servo_control.c:110:14:Servo_GetState	16	static
+../Core/Src/servo_control.c:118:6:RS232_SendString	16	static
+../Core/Src/servo_control.c:138:6:RS232_ProcessByte	16	static
+../Core/Src/servo_control.c:168:17:Servo_AngleToCCR	16	static
+../Core/Src/servo_control.c:192:13:Servo_ParseLine	32	static
+../Core/Src/servo_control.c:250:13:Servo_SendStatus	32	static
+../Core/Src/servo_control.c:259:13:Servo_SendHelp	8	static

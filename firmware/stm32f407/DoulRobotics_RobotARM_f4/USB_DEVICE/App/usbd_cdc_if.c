@@ -23,6 +23,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "cmd.h"
+#include "pwm.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -262,6 +263,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
   cmd_RxPush(Buf, *Len);
+  PWM_ProcessCommand(Buf, *Len);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);

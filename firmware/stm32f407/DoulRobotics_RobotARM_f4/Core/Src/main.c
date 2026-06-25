@@ -22,6 +22,7 @@
 #include "i2s.h"
 #include "spi.h"
 #include "tim.h"
+#include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
 
@@ -30,10 +31,14 @@
 #include <string.h>
 #include "usbd_cdc_if.h"
 #include "config.h"
-#include "RobStride_Mit.h"
+#include "RobStride_MIT.h"
 #include "cmd.h"
 #include "trajectory.h"
 #include "pd_control.h"
+#include "axis.h"
+#include "servo_control.h"
+#include "pwm.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +59,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern uint8_t s_rx_byte;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -104,6 +109,8 @@ int main(void)
   MX_TIM3_Init();
   MX_USB_DEVICE_Init();
   MX_TIM2_Init();
+  MX_TIM4_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   // PWM start
@@ -136,7 +143,11 @@ int main(void)
   config_Init();
   cmd_Init();
   pd_Init();
+  Servo_Init();
+  PWM_Init();
+
   HAL_Delay(1000);
+
 
   char *msg = "Robstaride MIT Ready\r\n";
   CDC_Transmit_FS((uint8_t*)msg, strlen(msg));
@@ -200,7 +211,69 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART2)
+    {
+        /* 1. 수신한 바이트 처리 (파싱 + 에코) */
+        RS232_ProcessByte(s_rx_byte);
+ 
+        /* 2. 다음 1바이트 수신 재등록 — 반드시 호출 */
+        HAL_UART_Receive_IT(&huart2, &s_rx_byte, 1);
+    }
+}
 
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+    if (hcan->Instance == CAN2)
+        RS_CAN2_RxCallback(hcan);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM2)
+    {
+    	PWM_Tick5ms();
+        axis_J2_Update(RS_J2.feedback.Angle);
+        traj_Update();
+
+        for (int i = 0; i < MOTOR_COUNT; i++)
+        {
+            float ref_pos, ref_vel;
+
+            if (traj_IsActive(i))
+            {
+                /* 궤적 진행 중: 궤적 따라가며 홀드 목표 갱신 */
+                ref_pos = traj_GetTargetPos(i);
+                ref_vel = traj_GetTargetVel(i);
+                pd_SetGoal(i, ref_pos);          /* ★ 홀드 목표 저장 */
+            }
+            else
+            {
+                /* 궤적 끝남: 마지막 목표 홀드 + 속도 0 */
+                if (!pd_HasGoal(i)) continue;    /* 명령 한 번도 없으면 skip */
+                ref_pos = pd_GetGoal(i);         /* ★ 홀드 목표 */
+                ref_vel = 0.0f;
+            }
+
+            /* 현재 위치: 외부PD는 연속각, 내부PD는 raw */
+            float cur_pos, cur_vel = RS_Motors[i]->feedback.Speed;
+            if (pd_GetMode(i) == PD_MODE_EXTERNAL)
+                cur_pos = axis_J2_GetContinuousRad();
+            else
+                cur_pos = RS_Motors[i]->feedback.Angle;
+
+            PDOutput_t out;
+            pd_Compute(i, ref_pos, ref_vel, cur_pos, cur_vel, &out);
+
+            RS_MIT_Control(RS_Motors[i],
+                           out.pos, out.vel, out.kp, out.kd, out.torque);
+
+            if (traj_IsActive(i) && traj_IsFinished(i))
+                traj_Stop(i);
+        }
+    }
+}
 /* USER CODE END 4 */
 
 /**

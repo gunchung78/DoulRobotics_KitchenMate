@@ -17,6 +17,7 @@
 #include "trajectory.h"
 #include "pd_control.h"
 #include "axis.h"
+#include "kin_bridge.h"
 
 /* =========================================================
  * 목표값 저장소
@@ -258,6 +259,76 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
+    /* ---- GOTO: 목표점(x,y,z mm)을 IK로 풀어 궤적 시작 ----
+   "GOTO x_mm y_mm z_mm T"  예: GOTO -700 100 50 3 */
+    if (strncmp(line, "GOTO", 4) == 0)
+    {
+        float x, y, z, T;
+        if (sscanf(line + 4, "%f %f %f %f", &x, &y, &z, &T) == 4)
+        {
+            /* 현재 관절 (시드 + 궤적 시작점) */
+            float cur_j0 = RS_J0.feedback.Angle;
+            float cur_j1 = RS_J1.feedback.Angle;
+            float cur_j2_mm = axis_J2_GetContinuousMm();
+
+            /* IK 풀기 */
+            KinTarget_t tgt;
+            kin_SolveGoto(x, y, z, cur_j0, cur_j1, cur_j2_mm, &tgt);
+
+            if (tgt.ok)
+            {
+                /* 시작점: J0/J1 raw, J2 연속각 */
+                float start[3] = {
+                    cur_j0, cur_j1, axis_J2_GetContinuousRad()
+                };
+                float goal[3] = { tgt.j0_rad, tgt.j1_rad, tgt.j2_rad };
+
+                traj_StartAll(start, goal, T);
+
+                snprintf(reply, sizeof(reply),
+                    "GOTO ok: J0=%.2f J1=%.2f J2=%.1fmm err=%.2fmm T=%.1f\r\n",
+                    tgt.j0_rad, tgt.j1_rad, axis_J2_RadToMm(tgt.j2_rad),
+                    tgt.error_mm, T);
+            }
+            else
+            {
+                snprintf(reply, sizeof(reply),
+                    "GOTO unreachable: err=%.2fmm (closest)\r\n", tgt.error_mm);
+            }
+        }
+        else
+        {
+            snprintf(reply, sizeof(reply),
+                "ERR: Usage: GOTO <x_mm> <y_mm> <z_mm> <T>\r\n");
+        }
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+
+    /* "IKTEST x y z" — 모터 안 움직이고 IK 해만 출력 */
+    if (strncmp(line, "IKTEST", 6) == 0)
+    {
+        float x, y, z;
+        if (sscanf(line + 6, "%f %f %f", &x, &y, &z) == 3)
+        {
+            float cur_j2_mm = axis_J2_GetContinuousMm();
+            KinTarget_t tgt;
+            kin_SolveGoto(x, y, z, RS_J0.feedback.Angle,
+                        RS_J1.feedback.Angle, cur_j2_mm, &tgt);
+
+            snprintf(reply, sizeof(reply),
+                "IK: ok=%d J0=%.3f J1=%.3f J2=%.1fmm err=%.2fmm\r\n",
+                tgt.ok,
+				tgt.j0_rad * 57.2958f,
+				tgt.j1_rad * 57.2958f,
+                axis_J2_RadToMm(tgt.j2_rad),
+				tgt.error_mm);
+        }
+        else snprintf(reply, sizeof(reply), "ERR: IKTEST <x> <y> <z>\r\n");
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+
     /* ---- 관절 선택 ---- */
     RS_Motor_t* motor = NULL;
     if      (strncmp(line, "J0", 2) == 0) motor = &RS_J0;
@@ -286,13 +357,14 @@ static void cmd_ProcessLine(char* line)
     else if (*p == 'Z')   /* Set Zero */
     {
         RS_MIT_SetZeroPos(motor);
+        uint32_t cnt = g_rx_callback_count;
+        uint32_t t0 = HAL_GetTick();
+        while (g_rx_callback_count == cnt && (HAL_GetTick()-t0) < 20) {}
         if (motor == &RS_J2) {
-            uint32_t cnt = g_rx_callback_count;
-            uint32_t t0 = HAL_GetTick();
-            while (g_rx_callback_count == cnt && (HAL_GetTick()-t0) < 20) {}
-
             axis_J2_ResetUnwrap(RS_J2.feedback.Angle);
             pd_SetGoal(2, axis_J2_GetContinuousRad());
+        } else {
+            pd_SetGoal(idx, 0.0f);
         }
         snprintf(reply, sizeof(reply), "%s SetZero OK\r\n", line);
     }

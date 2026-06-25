@@ -18,15 +18,11 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <pd_control.h>
 #include "main.h"
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "RobStride_MIT.h"
-#include "trajectory.h"
-#include "pd_control.h"
-#include "axis.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +60,7 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern CAN_HandleTypeDef hcan2;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
+extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -235,6 +232,20 @@ void TIM3_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
   * @brief This function handles CAN2 TX interrupts.
   */
 void CAN2_TX_IRQHandler(void)
@@ -277,55 +288,5 @@ void OTG_FS_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
-    if (hcan->Instance == CAN2)
-        RS_CAN2_RxCallback(hcan);
-}
 
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if (htim->Instance == TIM2)
-    {
-        axis_J2_Update(RS_J2.feedback.Angle);
-        traj_Update();
-
-        for (int i = 0; i < MOTOR_COUNT; i++)
-        {
-            float ref_pos, ref_vel;
-
-            if (traj_IsActive(i))
-            {
-                /* 궤적 진행 중: 궤적 따라가며 홀드 목표 갱신 */
-                ref_pos = traj_GetTargetPos(i);
-                ref_vel = traj_GetTargetVel(i);
-                pd_SetGoal(i, ref_pos);          /* ★ 홀드 목표 저장 */
-            }
-            else
-            {
-                /* 궤적 끝남: 마지막 목표 홀드 + 속도 0 */
-                if (!pd_HasGoal(i)) continue;    /* 명령 한 번도 없으면 skip */
-                ref_pos = pd_GetGoal(i);         /* ★ 홀드 목표 */
-                ref_vel = 0.0f;
-            }
-
-            /* 현재 위치: 외부PD는 연속각, 내부PD는 raw */
-            float cur_pos, cur_vel = RS_Motors[i]->feedback.Speed;
-            if (pd_GetMode(i) == PD_MODE_EXTERNAL)
-                cur_pos = axis_J2_GetContinuousRad();
-            else
-                cur_pos = RS_Motors[i]->feedback.Angle;
-
-            PDOutput_t out;
-            pd_Compute(i, ref_pos, ref_vel, cur_pos, cur_vel, &out);
-
-            RS_MIT_Control(RS_Motors[i],
-                           out.pos, out.vel, out.kp, out.kd, out.torque);
-
-            if (traj_IsActive(i) && traj_IsFinished(i))
-                traj_Stop(i);
-        }
-    }
-}
 /* USER CODE END 1 */
