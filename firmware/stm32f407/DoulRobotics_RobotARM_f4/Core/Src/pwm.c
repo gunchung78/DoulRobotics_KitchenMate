@@ -19,7 +19,7 @@
  *   ARR       = 332  → 500,000 / 333   ≈ 15,015 Hz
  *   CCR 범위  = 0 ~ 333 (= ARR + 1)
  */
-#define TIM3_ARR_PLUS1    333u
+#define TIM3_ARR_PLUS1    28u
 
 #define DUTY_100_CCR     (TIM3_ARR_PLUS1)                    /* 333 : 100% */
 #define DUTY_40_CCR      (TIM3_ARR_PLUS1 * 40u / 100u)      /* 133 :  40% */
