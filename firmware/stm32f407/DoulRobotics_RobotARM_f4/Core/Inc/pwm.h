@@ -53,13 +53,13 @@ void PWM_Init(void);
  */
 void PWM_Tick5ms(void);
 
-/**
- * @brief  USB CDC 수신 문자열 처리.
- *         usbd_cdc_if.c 의 CDC_Receive_FS 에서 호출.
- *
- * @param  buf  수신 데이터 포인터 (NULL 종료 불필요, len 사용)
- * @param  len  수신 바이트 수
- */
-void PWM_ProcessCommand(const uint8_t *buf, uint32_t len);
+
+void PWM_BK1_On(void);
+void PWM_BK1_Off(void);
+void PWM_BK2_On(void);
+void PWM_BK2_Off(void);
+void PWM_SOL_On(void);
+void PWM_SOL_Off(void);
+void PWM_PrintStatus(void);
 
 #endif /* PWM_H */

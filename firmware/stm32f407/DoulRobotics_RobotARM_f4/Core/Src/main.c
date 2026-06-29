@@ -113,15 +113,15 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  // PWM start
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  config_Init();
+
+  RS_AllMotors_Init(&hcan2);
+
+  cmd_Init();
+  pd_Init();
+  Servo_Init();
+  PWM_Init();
   
-  // TIM2 start
-  HAL_TIM_Base_Start_IT(&htim2);
-  
-  // CAN start
   CAN_FilterTypeDef sFilterConfig;
   sFilterConfig.FilterBank           = 14;   // CAN2는 14~27 사용
   sFilterConfig.FilterMode           = CAN_FILTERMODE_IDMASK;
@@ -135,19 +135,13 @@ int main(void)
   sFilterConfig.SlaveStartFilterBank = 14;   // CAN2 슬레이브 시작 뱅크
   HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig);
   HAL_CAN_Start(&hcan2);
-  HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
-  
-  // RobStride MIT 초기화
-  RS_AllMotors_Init(&hcan2);
-  
-  config_Init();
-  cmd_Init();
-  pd_Init();
-  Servo_Init();
-  PWM_Init();
+  HAL_CAN_ActivateNotification(&hcan2,
+                              CAN_IT_RX_FIFO0_MSG_PENDING |
+                              CAN_IT_TX_MAILBOX_EMPTY);
+
+  HAL_TIM_Base_Start_IT(&htim2);
 
   HAL_Delay(1000);
-
 
   char *msg = "Robstaride MIT Ready\r\n";
   CDC_Transmit_FS((uint8_t*)msg, strlen(msg));
@@ -229,11 +223,34 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
         RS_CAN2_RxCallback(hcan);
 }
 
+void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
+{
+    if (hcan->Instance == CAN2)
+    {
+        RS_CAN2_TxPump(hcan);
+    }
+}
+
+void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef *hcan)
+{
+    if (hcan->Instance == CAN2)
+    {
+        RS_CAN2_TxPump(hcan);
+    }
+}
+
+void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
+{
+    if (hcan->Instance == CAN2)
+    {
+        RS_CAN2_TxPump(hcan);
+    }
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM2)
     {
-    	PWM_Tick5ms();
         axis_J2_Update(RS_J2.feedback.Angle);
         traj_Update();
 

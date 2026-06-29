@@ -34,7 +34,7 @@ extern "C" {
 /* =========================================================
  * 제어 주기
  * ========================================================= */
-#define CTRL_PERIOD_MS      5                          /* TIM2 주기 (ms) */
+#define CTRL_PERIOD_MS      1                          /* TIM2 주기 (ms) */
 #define CTRL_DT             (CTRL_PERIOD_MS * 0.001f)  /* 초 단위 자동계산 */
 #define PRINT_PERIOD_MS     100                        /* 출력 주기 (ms) */
 

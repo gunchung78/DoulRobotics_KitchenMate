@@ -1,52 +1,44 @@
-//###########################################################################
-// FILE:    cmd.c
-// TITLE:   UART(USB CDC) 명령 처리 — 링버퍼 기반
-//          STM32F407G-DISC1 / CubeIDE
-//
-// 설계 원칙: 받기와 처리를 분리
-//   - USB 콜백(cmd_RxPush): 링버퍼에 복사만, 즉시 반환 → 누락 방지
-//   - 메인 루프(cmd_Update): 링버퍼에서 줄 조립 → 파싱 → 송신/출력
-//   - 응답 출력(CDC_Transmit_FS)은 메인 루프에서만 → USB 충돌 방지
-//###########################################################################
+/**
+ * @file cmd.c
+ * @author geon lee (sweng.geon@gmail.com)
+ * @brief USB CDC 명령어 파싱 및 모터 제어 명령 처리 구현부
+ * @version 0.2
+ * @date 2026-06-29
+ * 
+ * @details
+ * PC에서 USB CDC로 수신한 문자열 명령을 링버퍼에 저장하고,
+ * 한 줄 단위로 파싱하여 모터 Enable/Disable, PWM, CAN 진단,
+ * MOVE, GOTO, IKTEST 등의 명령을 실행한다.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cmd.h"
+#include "config.h"
+#include "RobStride_MIT.h"
 #include "usbd_cdc_if.h"
 #include "trajectory.h"
 #include "pd_control.h"
 #include "axis.h"
 #include "kin_bridge.h"
+#include "pwm.h"
 
-/* =========================================================
- * 목표값 저장소
- * ========================================================= */
-RS_Target_t g_target[3] = {0};   /* [0]=J0 [1]=J1 [2]=J2 */
+RS_Target_t g_target[MOTOR_COUNT] = {0};
 
-/* 주기 출력 ON/OFF (기본 OFF) */
-static uint8_t s_auto_print = 0;
+static uint8_t s_auto_print = 0;                ///< 주기 출력 ON/OFF (기본 OFF)
 
-/* CAN 진단용 외부 카운터 (RobStride_MIT.c) */
-extern volatile uint32_t g_rx_callback_count;
+extern volatile uint32_t g_rx_callback_count;   ///< CAN 진단용 외부 카운터 (RobStride_MIT.c)
 
-/* =========================================================
- * 수신 링버퍼
- *  - head: 콜백(인터럽트)이 쓰는 위치
- *  - tail: 메인 루프가 읽는 위치
- *  - head==tail 이면 비어있음
- * ========================================================= */
-static volatile uint8_t  rx_ring[RX_RING_SIZE];
-static volatile uint16_t rx_head = 0;
-static volatile uint16_t rx_tail = 0;
+static volatile uint8_t  rx_ring[RX_RING_SIZE]; ///< 링버퍼
+static volatile uint16_t rx_head = 0;           ///< 콜백(인터럽트) 쓰는 위치
+static volatile uint16_t rx_tail = 0;           ///< 메인 루프가 읽는 위치
 
-/* 줄 조립 버퍼 (메인 루프 전용) */
-static char     s_line[CMD_LINE_SIZE];
-static uint16_t s_line_len = 0;
+static char     s_line[CMD_LINE_SIZE];          ///< 입력 배열
+static uint16_t s_line_len = 0;                 ///< 입력 길이 초기화
 
-/* =========================================================
- * 모터 포인터 ↔ 인덱스
- * ========================================================= */
+
+/* 모터 인덱스 */
 static int RS_GetIndex(RS_Motor_t* motor)
 {
     if (motor == &RS_J0) return 0;
@@ -55,9 +47,7 @@ static int RS_GetIndex(RS_Motor_t* motor)
     return -1;
 }
 
-/* =========================================================
- * 초기화
- * ========================================================= */
+/* 초기화 */
 void cmd_Init(void)
 {
     memset(g_target, 0, sizeof(g_target));
@@ -72,28 +62,23 @@ void cmd_SetAutoPrint(uint8_t on)
     s_auto_print = on ? 1 : 0;
 }
 
-/* =========================================================
- * USB CDC 수신 콜백 — 링버퍼에 복사만 (빠르게 반환)
- *  - 인터럽트 컨텍스트에서 실행되므로 파싱/출력 금지
- *  - 버퍼 가득 차면 통제된 버림 (오버플로 방지)
- * ========================================================= */
+/* USB CD 수신 콜백 (링버퍼)*/
 void cmd_RxPush(uint8_t* buf, uint32_t len)
 {
     for (uint32_t i = 0; i < len; i++)
     {
         uint16_t next = (uint16_t)((rx_head + 1) % RX_RING_SIZE);
-        if (next != rx_tail)               /* 가득 안 찼으면 */
+        if (next != rx_tail)
         {
+            /* 가득 안 찼으면*/
             rx_ring[rx_head] = buf[i];
             rx_head = next;
         }
-        /* 가득 차면 해당 바이트 버림 */
+        /* 가득 찼으면 버림*/
     }
 }
 
-/* =========================================================
- * CAN 진단
- * ========================================================= */
+/* CAN 진단 */
 static void cmd_CAN_Diagnostic(void)
 {
     char reply[256] = {0};
@@ -130,18 +115,27 @@ static void cmd_CAN_Diagnostic(void)
     CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
 }
 
-/* =========================================================
+/*
  * 완성된 한 줄 파싱 + 실행
  *
  * 지원 명령:
- *   "J0 E"                    Enable (주기 송신 시작)
- *   "J0 D"                    Disable (주기 송신 중지)
- *   "J0 Z"                    Set Zero
- *   "J0 C ang spd kp kd trq"  MIT Control 목표값 설정
- *   "STATUS"                  전체 피드백 1회 출력
- *   "AUTO 1" / "AUTO 0"       주기 출력 ON/OFF
- *   "CAN"                     CAN 진단
- * ========================================================= */
+ *   "J0 E"                         Enable (주기 송신 시작)
+ *   "J0 D"                         Disable (주기 송신 중지)
+ *   "J0 Z"                         Set Zero
+ *   "E"
+ *   "D"
+ *   "J0 C ang spd kp kd trq"       MIT Control 목표값 설정
+ *   "BK1/BK2/SOL ON"
+ *   "BK1/BK2/SOL OFF" 
+ *   "PWM STATUS"
+ *   "STATUS"                       전체 피드백 1회 출력
+ *   "AUTO 1" / "AUTO 0"            주기 출력 ON/OFF
+ *   "CAN"                          CAN 진단
+ *   "MOVE q0_rad q1_rad j2_mm T"
+ *   "PD axis kp kd"
+ *   "GOTO x_mm y_mm z_mm T"  예: GOTO -700 100 50 3 
+ *   "IKTEST x y z"
+*/
 static void cmd_ProcessLine(char* line)
 {
     char reply[256] = {0};
@@ -164,7 +158,6 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* ---- AUTO ---- */
     if (strncmp(line, "AUTO", 4) == 0)
     {
         int on = 0;
@@ -181,16 +174,60 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* ---- CAN 진단 ---- */
     if (strncmp(line, "CAN", 3) == 0)
     {
         cmd_CAN_Diagnostic();
         return;
     }
 
-    /* ---- MOVE: 3축 동시 궤적 ----
-    "MOVE q0_rad q1_rad j2_mm T"
-    예: MOVE 1.0 0.5 10 2  → J0=1.0rad, J1=0.5rad, J2=10mm, 2초 */
+    if (strcmp(line, "BK1 ON") == 0)
+    {
+        PWM_BK1_On();
+        CDC_Transmit_FS((uint8_t*)"[PWM] BK1 ON\r\n", 14);
+        return;
+    }
+
+    if (strcmp(line, "BK1 OFF") == 0)
+    {
+        PWM_BK1_Off();
+        CDC_Transmit_FS((uint8_t*)"[PWM] BK1 OFF\r\n", 15);
+        return;
+    }
+
+    if (strcmp(line, "BK2 ON") == 0)
+    {
+        PWM_BK2_On();
+        CDC_Transmit_FS((uint8_t*)"[PWM] BK2 ON\r\n", 14);
+        return;
+    }
+
+    if (strcmp(line, "BK2 OFF") == 0)
+    {
+        PWM_BK2_Off();
+        CDC_Transmit_FS((uint8_t*)"[PWM] BK2 OFF\r\n", 15);
+        return;
+    }
+
+    if (strcmp(line, "SOL ON") == 0)
+    {
+        PWM_SOL_On();
+        CDC_Transmit_FS((uint8_t*)"[PWM] SOL ON\r\n", 14);
+        return;
+    }
+
+    if (strcmp(line, "SOL OFF") == 0)
+    {
+        PWM_SOL_Off();
+        CDC_Transmit_FS((uint8_t*)"[PWM] SOL OFF\r\n", 15);
+        return;
+    }
+
+    if (strcmp(line, "PWM STATUS") == 0)
+    {
+        PWM_PrintStatus();
+        return;
+    }
+    
     if (strncmp(line, "MOVE", 4) == 0)
     {
         float q0_rad, q1_rad, j2_mm, T;
@@ -222,8 +259,7 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* ---- E: 전체 모터 Enable ---- */
-    if (strncmp(line, "E", 1) == 0 && line[1] == '\0')   // ★ "E" 한 글자만
+    if (strncmp(line, "E", 1) == 0 && line[1] == '\0')
     {
         RS_MIT_Enable(&RS_J0);
         RS_MIT_Enable(&RS_J1);
@@ -233,10 +269,9 @@ static void cmd_ProcessLine(char* line)
         return;     // ★ 이 return이 핵심
     }
 
-    /* ---- D: 전체 모터 Disable ---- */
-    if (strncmp(line, "D", 1) == 0 && line[1] == '\0')   // ★ "D" 한 글자만
+    if (strncmp(line, "D", 1) == 0 && line[1] == '\0')
     {
-        traj_StopAll();              // 궤적도 정지
+        traj_StopAll();
         RS_MIT_Disable(&RS_J0);
         RS_MIT_Disable(&RS_J1);
         RS_MIT_Disable(&RS_J2);
@@ -245,7 +280,6 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* "PD axis kp kd"  예: PD 2 7.5 1.5 */
     if (strncmp(line, "PD", 2) == 0)
     {
         int axis; float kp, kd;
@@ -259,8 +293,6 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* ---- GOTO: 목표점(x,y,z mm)을 IK로 풀어 궤적 시작 ----
-   "GOTO x_mm y_mm z_mm T"  예: GOTO -700 100 50 3 */
     if (strncmp(line, "GOTO", 4) == 0)
     {
         float x, y, z, T;
@@ -305,7 +337,6 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    /* "IKTEST x y z" — 모터 안 움직이고 IK 해만 출력 */
     if (strncmp(line, "IKTEST", 6) == 0)
     {
         float x, y, z;
@@ -400,10 +431,7 @@ static void cmd_ProcessLine(char* line)
     CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
 }
 
-/* =========================================================
- * 링버퍼에서 줄 조립
- *  - 패킷이 어떻게 쪼개져 와도 \r 또는 \n 만나면 한 줄로 처리
- * ========================================================= */
+/* 패킷이 어떻게 쪼개져 와도 \r 또는 \n 만나면 한 줄로 처리 */
 static void cmd_DrainRing(void)
 {
     while (rx_tail != rx_head)
@@ -433,18 +461,16 @@ static void cmd_DrainRing(void)
     }
 }
 
-/* =========================================================
- * 주기 처리 — main while 루프에서 매번 호출
- * ========================================================= */
+/* main while */
 void cmd_Update(void)
 {
     static uint32_t last_print = 0;
     uint32_t now = HAL_GetTick();
 
-    /* ① 수신 링버퍼 처리 (줄 조립 → 파싱) */
+    /* 수신 링버퍼 처리 (줄 조립 → 파싱) */
     cmd_DrainRing();
 
-    /* ③ 피드백 주기 출력 (AUTO ON 일 때만) */
+    /* 피드백 주기 출력 (AUTO ON 일 때만) */
     if (s_auto_print && (now - last_print >= CMD_PRINT_PERIOD_MS))
     {
         last_print = now;

@@ -1,31 +1,39 @@
-//###########################################################################
-// FILE:    RobStride_MIT.c
-// TITLE:   RobStride Motor MIT Mode Driver (HAL, C language)
-//          STM32F407G-DISC1 / CubeIDE
-//
-// Ported from ssRobStride(CAN2).cpp (IAR + StdPeriph)
-// → HAL_CAN_AddTxMessage 기반으로 재작성
-// → C언어 구조체 기반으로 변환 (클래스 제거)
-//###########################################################################
-
 #include "RobStride_MIT.h"
 #include "usbd_cdc_if.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
 
-/* =========================================================
- * 전역 모터 인스턴스
- * ========================================================= */
-RS_Motor_t RS_J0;  // Joint0 : RS03
-RS_Motor_t RS_J1;  // Joint1 : RS03
-RS_Motor_t RS_J2;  // Joint2 : RS02
+RS_Motor_t RS_J0;  ///< Joint0 : RS03
+RS_Motor_t RS_J1;  ///< Joint1 : RS03
+RS_Motor_t RS_J2;  ///< Joint2 : RS02
 volatile uint32_t g_rx_callback_count = 0;
-RS_Motor_t* const RS_Motors[3] = { &RS_J0, &RS_J1, &RS_J2 };
+RS_Motor_t* const RS_Motors[MOTOR_COUNT] = { &RS_J0, &RS_J1, &RS_J2 };
 
-/* =========================================================
- * 내부 유틸: float <-> uint 변환 (MIT 프로토콜용)
- * ========================================================= */
+typedef struct 
+{
+    CAN_TxHeaderTypeDef header;
+    uint8_t data[8];
+    volatile uint8_t pending;
+} RS_CanTxSlot_t;
+
+static RS_CanTxSlot_t s_tx_slot[MOTOR_COUNT];
+static volatile uint8_t s_tx_rr = 0;
+static volatile uint8_t s_tx_pumping = 0;
+
+volatile uint32_t g_can_tx_overwrite_count = 0;
+volatile uint32_t g_can_tx_error_count = 0;
+
+static int RS_CAN2_GetTxSlotByMotor(RS_Motor_t *motor)
+{
+    if (motor == &RS_J0) return 0;
+    if (motor == &RS_J1) return 1;
+    if (motor == &RS_J2) return 2;
+
+    return -1;
+}
+
 static float uint16_to_float(uint16_t x, float x_min, float x_max, int bits)
 {
     uint32_t span = (1 << bits) - 1;
@@ -41,10 +49,6 @@ static uint16_t float_to_uint(float x, float x_min, float x_max, int bits)
     return (uint16_t)((x - x_min) * (float)span / (x_max - x_min));
 }
 
-/* =========================================================
- * 내부 유틸: CAN 송신 (HAL 기반, 폴링)
- * - StdPeriph의 ssCAN_SendMessage_NoneIT() 대체
- * ========================================================= */
 static uint8_t CAN_Send(CAN_HandleTypeDef* hcan,
                         CAN_TxHeaderTypeDef* pHeader,
                         uint8_t* pData)
@@ -52,22 +56,120 @@ static uint8_t CAN_Send(CAN_HandleTypeDef* hcan,
     uint32_t TxMailbox;
     uint32_t tick = HAL_GetTick();
 
-    // 빈 Mailbox 생길 때까지 대기 (타임아웃: CAN_TX_TIMEOUT_MS)
     while (HAL_CAN_GetTxMailboxesFreeLevel(hcan) == 0)
     {
         if ((HAL_GetTick() - tick) > CAN_TX_TIMEOUT_MS)
-            return 1; // timeout
+            return 1;
     }
 
     if (HAL_CAN_AddTxMessage(hcan, pHeader, pData, &TxMailbox) != HAL_OK)
-        return 2; // HAL error
+        return 2;
 
-    return 0; // success
+    return 0;
 }
 
-/* =========================================================
- * 스펙 로드 (모델에 따라 MIT 파라미터 범위 설정)
- * ========================================================= */
+void RS_CAN2_TxPump(CAN_HandleTypeDef *hcan)
+{
+    uint32_t txMailbox;
+
+    /* 중복 실행 방지 */
+    __disable_irq();
+    if (s_tx_pumping) 
+    {
+        __enable_irq();
+        return;
+    }
+    s_tx_pumping = 1;
+    __enable_irq();
+
+    /* CAN MAILBOX 비어있으면 송신 */
+    while (HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0)
+    {
+        CAN_TxHeaderTypeDef header;
+        uint8_t data[8];
+        int found = -1;
+
+        __disable_irq();
+
+        /* 모터 인덱스 선택 */
+        for (int k = 0; k < MOTOR_COUNT; k++)
+        {
+            int idx = (s_tx_rr + k) % MOTOR_COUNT;
+            if (s_tx_slot[idx].pending)
+            {
+                found = idx;
+                break;
+            }
+        }
+
+        /* 보낼 메시지 없으면 종료 */
+        if (found < 0)
+        {
+            s_tx_pumping = 0;
+            __enable_irq();
+            return;
+        }
+
+        /* slot에서 메시지 꺼내고 pending 해제 */
+        header = s_tx_slot[found].header;
+        memcpy(data, s_tx_slot[found].data, 8);
+
+        /* pending 초기화 후 다음 slot 검사 */
+        s_tx_slot[found].pending = 0;
+        s_tx_rr = (uint8_t)((found + 1) % MOTOR_COUNT);
+
+        __enable_irq();
+
+        /* 실제 can 송신 요청 */
+        if (HAL_CAN_AddTxMessage(hcan, &header, data, &txMailbox) != HAL_OK)
+        {
+            /* 송신 등록 실패 시 복구 */
+            __disable_irq();
+
+            s_tx_slot[found].header = header;
+            memcpy(s_tx_slot[found].data, data, 8);
+            s_tx_slot[found].pending = 1;
+
+            g_can_tx_error_count++;
+            s_tx_pumping = 0;
+
+            __enable_irq();
+            return;
+        }
+    }
+
+    /* Mailbox 꽉 차면 종료 */
+    __disable_irq();
+    s_tx_pumping = 0;
+    __enable_irq();
+}
+
+static uint8_t RS_CAN2_SendLatest(RS_Motor_t *motor,
+                                  CAN_TxHeaderTypeDef *header,
+                                  uint8_t *data)
+{
+    int slot = RS_CAN2_GetTxSlotByMotor(motor);
+
+    if (slot < 0) return 1;
+
+    __disable_irq();
+
+    /* 이전 메시지(pending == 1) 있으면 overwrite 카운트 증가 */
+    if(s_tx_slot[slot].pending) g_can_tx_overwrite_count++;
+
+    /* 최신 메시지 저장 */
+    s_tx_slot[slot].header = *header;
+    memcpy(s_tx_slot[slot].data, data, 8);
+    s_tx_slot[slot].pending = 1;
+
+    __enable_irq();
+
+    /* 송신 펌프 실행 */
+    RS_CAN2_TxPump(motor->hcan);
+
+    return 0;
+}
+
 static void LoadSpec(MotorSpec_t* spec, eMotorModel model)
 {
     switch (model)
@@ -97,9 +199,6 @@ static void LoadSpec(MotorSpec_t* spec, eMotorModel model)
     }
 }
 
-/* =========================================================
- * 초기화
- * ========================================================= */
 void RS_Motor_Init(RS_Motor_t* motor,
                    CAN_HandleTypeDef* hcan,
                    uint8_t can_id,
@@ -218,7 +317,7 @@ void RS_MIT_Control(RS_Motor_t* motor,
     TxHeader.DLC                = 8;
     TxHeader.TransmitGlobalTime = DISABLE;
 
-    CAN_Send(motor->hcan, &TxHeader, txdata);
+    RS_CAN2_SendLatest(motor, &TxHeader, txdata);
 }
 
 /* =========================================================
