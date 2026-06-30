@@ -18,9 +18,7 @@
 #include <math.h>
 #include <string.h>
 
-/* =========================================================
- * 내부 상수
- * ========================================================= */
+/* 내부 상수 */
 
 #ifndef ROBOT_IK_PI
 #define ROBOT_IK_PI 3.14159265358979323846f
@@ -39,19 +37,17 @@
 #define SLIDER_MIN_M  0.0f
 #define SLIDER_MAX_M  0.5f
 #define L1_MIN_RAD   -1.8326f
-#define L1_MAX_RAD    1.8326f
+#define L1_MAX_RAD    0.0f
 #define L2_MIN_RAD   -3.14159f
-#define L2_MAX_RAD    3.14159f
+#define L2_MAX_RAD    0.0f
 
-/* =========================================================
- * 내부 타입
- * ========================================================= */
+
+/* 내부 타입 */
 
 typedef struct { float m[4][4]; } Mat4;
 
-/* =========================================================
- * 내부 유틸
- * ========================================================= */
+
+/* 내부 유틸 */
 
 static float clampf_local(float v, float lo, float hi)
 {
@@ -68,9 +64,8 @@ static float point_error_mm(const RobotIKPoint *a, const RobotIKPoint *b)
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }
 
-/* =========================================================
- * 4×4 행렬 연산
- * ========================================================= */
+
+/* 행렬 연산 */
 
 static void mat4_identity(Mat4 *T)
 {
@@ -180,10 +175,9 @@ static void apply_revolute(Mat4 *T,
     mat4_mul(T, &A, T);
 }
 
-/* =========================================================
- * 3×3 선형계 가우스 소거 (피벗팅)
- *   반환 1: 성공, 0: 특이행렬
- * ========================================================= */
+
+/* 3×3 선형계 가우스 소거 (피벗팅) 반환 1: 성공, 0: 특이행렬 */
+
 static int solve_3x3(float A[3][3], float b[3], float x[3])
 {
     int i, j, k, pivot;
@@ -238,9 +232,8 @@ static int solve_3x3(float A[3][3], float b[3], float x[3])
     return 1;
 }
 
-/* =========================================================
- * 공개 유틸
- * ========================================================= */
+
+/* 공개 유틸 */
 
 float RobotIK_RadToDeg(float rad)
 {
@@ -268,11 +261,9 @@ void RobotIK_ClampJoint(RobotIKJoint *q)
     q->l2_rad   = clampf_local(q->l2_rad,   L2_MIN_RAD,   L2_MAX_RAD);
 }
 
-/* =========================================================
- * 순기구학
- *   체인: slider(prismatic) → l1(revolute) → l2(revolute) → tcp(fixed)
- *   URDF origin/axis 값을 그대로 사용한다.
- * ========================================================= */
+
+/* 순기구학 */
+
 void RobotIK_FK(const RobotIKJoint *q_in, RobotIKPoint *tcp_mm)
 {
     RobotIKJoint q;
@@ -306,10 +297,9 @@ void RobotIK_FK(const RobotIKJoint *q_in, RobotIKPoint *tcp_mm)
     tcp_mm->z_mm = T.m[2][3] * 1000.0f;
 }
 
-/* =========================================================
- * 단일 시드 DLS IK (내부 공용)
- *   SolveXYZ와 SolveStep이 공유하는 반복 루프 핵심
- * ========================================================= */
+
+/* 단일 시드 DLS IK (내부 공용) SolveXYZ와 SolveStep이 공유하는 반복 루프 핵심 */
+
 static RobotIKStatus solve_from_seed(const RobotIKPoint *target,
                                       const RobotIKJoint *seed_q,
                                       RobotIKResult *out)
@@ -400,9 +390,9 @@ static float estimate_slider_from_x(float target_x_mm)
                         SLIDER_MIN_M, SLIDER_MAX_M);
 }
 
-/* =========================================================
- * 멀티스타트 IK
- * ========================================================= */
+
+/* 멀티스타트 IK */
+
 RobotIKStatus RobotIK_SolveXYZ(
     float target_x_mm, float target_y_mm, float target_z_mm,
     const RobotIKJoint *seed_q,
@@ -474,12 +464,12 @@ RobotIKStatus RobotIK_SolveXYZ(
     return best_status;
 }
 
-/* =========================================================
- * Warm-start step IK (실시간 Cartesian 추종용)
+
+/*   Warm-start step IK (실시간 Cartesian 추종용)
  *   solve_from_seed와 동일한 DLS 루프를 사용하되:
  *   (1) 시드 1개, 반복 max_iter로 제한
- *   (2) 수렴 후 prev_q 기준 전체 변화량 clamp → 폭주 방지
- * ========================================================= */
+ *   (2) 수렴 후 prev_q 기준 전체 변화량 clamp → 폭주 방지  */
+
 RobotIKStatus RobotIK_SolveStep(
     float target_x_mm, float target_y_mm, float target_z_mm,
     const RobotIKJoint *prev_q,

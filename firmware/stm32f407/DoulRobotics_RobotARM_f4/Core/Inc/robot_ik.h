@@ -27,10 +27,10 @@ extern "C" {
  */
 typedef enum
 {
-    ROBOT_IK_OK = 0;
-    ROBOT_IK_MAX_ITER = 1;
-    ROBOT_IK_UNREACHABLE = 2;
-    ROBOT_IK_BAD_ARG = 3;
+    ROBOT_IK_OK = 0,
+    ROBOT_IK_MAX_ITER = 1,
+    ROBOT_IK_UNREACHABLE = 2,
+    ROBOT_IK_BAD_ARG = 3
 } RobotIKStatus;
 
 /**
@@ -76,7 +76,7 @@ void RobotIK_GetZeroPose(RobotIKJoint *q);
  * @brief 관절값 urdf 범위로 clamp한다.
  * @param q clamp 관절 각도
  */
-void RobotIK_ClampKJoint(RobotIKJoint *q);
+void RobotIK_ClampJoint(RobotIKJoint *q);
 
 /**
  * @brief rad를 deg로 변환한다.
@@ -120,8 +120,8 @@ void RobotIK_FK(const RobotIKJoint *q, RobotIKPoint *tcp_mm);
  */
 RobotIKStatus RobotIK_SolveXYZ(float target_x,
                                float tartget_y,
-                               float tartget_z
-                               const RobotIKJoint *seed_q
+                               float tartget_z,
+                               const RobotIKJoint *seed_q,
                                RobotIKResult *out);
 
 /**

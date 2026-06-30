@@ -1,1 +1,11 @@
-../Core/Src/kin_bridge.c:18:6:kin_SolveGoto	1
+../Core/Src/kin_bridge.c:60:13:ik_to_joint_goal	1
+../Core/Src/kin_bridge.c:69:13:joint_to_ik_seed	1
+../Core/Src/kin_bridge.c:78:13:store_joint_goal	1
+../Core/Src/kin_bridge.c:91:6:kin_SolveGoto	1
+../Core/Src/kin_bridge.c:117:6:kin_SolveStepOnce	3
+../Core/Src/kin_bridge.c:156:6:kin_StartCartesian	1
+../Core/Src/kin_bridge.c:180:6:kin_StopCartesian	1
+../Core/Src/kin_bridge.c:188:6:kin_RunnerUpdate	3
+../Core/Src/kin_bridge.c:222:9:kin_GetJointGoal	1
+../Core/Src/kin_bridge.c:236:13:kin_GetRunState	1
+../Core/Src/kin_bridge.c:241:7:kin_GetTrackError	1

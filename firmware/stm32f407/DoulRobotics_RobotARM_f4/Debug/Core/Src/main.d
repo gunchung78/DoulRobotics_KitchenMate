@@ -48,7 +48,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/config.h ../Core/Inc/RobStride_MIT.h ../Core/Inc/cmd.h \
  ../Core/Inc/RobStride_MIT.h ../Core/Inc/trajectory.h \
  ../Core/Inc/config.h ../Core/Inc/pd_control.h ../Core/Inc/axis.h \
- ../Core/Inc/servo_control.h ../Core/Inc/pwm.h
+ ../Core/Inc/servo_control.h ../Core/Inc/pwm.h ../Core/Inc/kin_bridge.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -112,3 +112,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/axis.h:
 ../Core/Inc/servo_control.h:
 ../Core/Inc/pwm.h:
+../Core/Inc/kin_bridge.h:

@@ -1,38 +1,42 @@
-//###########################################################################
-// FILE:    trajectory.c
-// TITLE:   5차 다항식(Quintic) 다축 동시 궤적 생성 (순수 계산)
-//          STM32F407G-DISC1 / CubeIDE
-//
-// 구조: TIM2 ISR(5ms)에서 traj_Update() 호출 → 목표값 계산/저장만
-//   - CAN 송신은 하지 않음 (RobStride_MIT 의존 제거)
-//   - 송신은 ISR이 getter로 결과를 읽어서 직접 처리
-//
-// 의존: config.h (MOTOR_COUNT, CTRL_DT, g_axis_cfg) 만.
-//       RobStride_MIT 는 모름 → 다른 모터/보드/시뮬에 재사용 가능
-//###########################################################################
+/**
+ * @file trajectory.c
+ * @author geon lee (sweng.geon@gmail.com)
+ * @brief 5차 다항식(Quintic) 궤적 생성 구현부
+ * @version 0.3
+ * @date 2026-06-29
+ *
+ * @details
+ * 관절 궤적(g_traj)과 직교 궤적(g_cart)을 모두 생성한다.
+ * TIM2 ISR(1ms)에서 traj_Update()/cart_Update()를 호출해 목표값을
+ * 계산·저장만 하며, 모터 송신은 호출측(ISR)이 getter로 결과를 읽어
+ * 직접 수행한다. 본 모듈은 CAN/모터/IK를 모른다.
+ */
 
 #include "trajectory.h"
 
 /* =========================================================
- * 다축 궤적 상태
+ * 전역 궤적 상태
  * ========================================================= */
 TrajAxis_t g_traj[MOTOR_COUNT] = {0};
+CartTraj_t g_cart              = {0};
 
 /* =========================================================
- * 순수 계산: 5차 다항식
- *   s(tau)   = 10tau^3 - 15tau^4 + 6tau^5
- *   s'(tau)  = (30tau^2 - 60tau^3 + 30tau^4) / T
- *   s''(tau) = (60tau - 180tau^2 + 120tau^3) / T^2
+ * 공용 보간기: 5차 다항식
+ *   s(τ)   = 10τ^3 - 15τ^4 + 6τ^5
+ *   s'(τ)  = (30τ^2 - 60τ^3 + 30τ^4) / T
+ *   s''(τ) = (60τ - 180τ^2 + 120τ^3) / T^2
  * ========================================================= */
-void quintic_eval(float q0, float qf, float T, float t, TrajPoint_t* out) {
+void quintic_eval(float q0, float qf, float T, float t, TrajPoint_t* out)
+{
     /* T가 0 이하면 즉시 끝값 반환 (0 나누기 방지) */
     if (T <= 0.0f) {
         out->q = qf; out->qd = 0.0f; out->qdd = 0.0f;
         return;
     }
+
     /* 범위 밖이면 clamp (끝나면 끝값 유지) */
-    if (t < 0.0f)  t = 0.0f;
-    if (t > T)     t = T;
+    if (t < 0.0f) t = 0.0f;
+    if (t > T)    t = T;
 
     float dq   = qf - q0;
     float tau  = t / T;
@@ -52,9 +56,10 @@ void quintic_eval(float q0, float qf, float T, float t, TrajPoint_t* out) {
 }
 
 /* =========================================================
- * 궤적 시작 / 정지
+ * 관절(Joint) 궤적 — 시작 / 정지
  * ========================================================= */
-void traj_Start(int axis, float q0, float qf, float T) {
+void traj_Start(int axis, float q0, float qf, float T)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return;
 
     g_traj[axis].q0     = q0;
@@ -68,80 +73,151 @@ void traj_Start(int axis, float q0, float qf, float T) {
     g_traj[axis].active = 1;
 }
 
-void traj_StartAll(const float q0[MOTOR_COUNT], const float qf[MOTOR_COUNT], float T) {
+void traj_StartAll(const float q0[MOTOR_COUNT], const float qf[MOTOR_COUNT], float T)
+{
     for (int i = 0; i < MOTOR_COUNT; i++)
         traj_Start(i, q0[i], qf[i], T);
 }
 
-void traj_Stop(int axis) {
+void traj_Stop(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return;
     g_traj[axis].active = 0;
 }
 
-void traj_StopAll(void) {
+void traj_StopAll(void)
+{
     for (int i = 0; i < MOTOR_COUNT; i++)
         g_traj[i].active = 0;
 }
 
 /* =========================================================
- * 궤적 스텝 진행 (TIM2 ISR 5ms) — 계산/저장만
- *   종료 판정은 송신 이후에 해야 끝점이 송신됨.
- *   하지만 송신이 ISR로 빠졌으므로, 여기서 active를 끄지 않고
- *   "끝시간 도달" 상태만 유지 → 송신측이 끝점 보낸 뒤 traj_Stop.
- *   단순화를 위해: 끝점까지 계산은 계속하되, t가 T를 넘어도
- *   clamp 되어 끝값을 반복 출력 → 송신측이 도달 판단해 Stop 호출.
+ * 관절 궤적 — 1스텝 진행 (계산/저장만)
+ *   t가 T를 넘어도 quintic_eval 내부에서 clamp되어 끝값을 반복 출력.
+ *   종료 판정/정지는 송신측(ISR)이 traj_IsFinished 보고 처리.
  * ========================================================= */
-void traj_Update(void) {
+void traj_Update(void)
+{
     for (int i = 0; i < MOTOR_COUNT; i++) {
         if (!g_traj[i].active) continue;
 
         /* 경과 시간 진행 */
         g_traj[i].t += CTRL_DT;
 
-        /* 목표 계산 (t > T 면 quintic_eval 내부에서 clamp) */
+        /* 목표 계산 (t > T 면 내부에서 clamp) */
         TrajPoint_t pt;
         quintic_eval(g_traj[i].q0, g_traj[i].qf, g_traj[i].T, g_traj[i].t, &pt);
 
-        /* 결과 저장만 (CAN 송신 안 함) */
         g_traj[i].q_cur  = pt.q;
         g_traj[i].qd_cur = pt.qd;
     }
 }
 
 /* =========================================================
- * 결과 읽기 (송신측에서 사용)
+ * 관절 궤적 — 결과 읽기 (송신측에서 사용)
  * ========================================================= */
-uint8_t traj_IsActive(int axis) {
+uint8_t traj_IsActive(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0;
     return g_traj[axis].active;
 }
 
-float traj_GetTargetPos(int axis) {
+float traj_GetTargetPos(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0.0f;
     return g_traj[axis].q_cur;
 }
 
-float traj_GetTargetVel(int axis) {
+float traj_GetTargetVel(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0.0f;
     return g_traj[axis].qd_cur;
 }
 
-float traj_GetKp(int axis) {
+float traj_GetKp(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0.0f;
     return g_traj[axis].kp;
 }
 
-float traj_GetKd(int axis) {
+float traj_GetKd(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0.0f;
     return g_traj[axis].kd;
 }
 
-/* =========================================================
- * 끝시간 도달 여부 (송신측이 끝점 송신 후 Stop 판단용)
- *   t >= T 이면 1 반환. active와 별개 (끝점 송신 보장).
- * ========================================================= */
-uint8_t traj_IsFinished(int axis) {
+uint8_t traj_IsFinished(int axis)
+{
     if (axis < 0 || axis >= MOTOR_COUNT) return 0;
     if (!g_traj[axis].active) return 0;
     return (g_traj[axis].t >= g_traj[axis].T) ? 1 : 0;
+}
+
+/* =========================================================
+ * 직교(Cartesian) 궤적 — 시작 / 정지
+ *   x,y,z 3축이 공통 시간 T를 공유하며 직선 경로를 생성.
+ * ========================================================= */
+void cart_Start(const float p0[3], const float pf[3], float T)
+{
+    for (int i = 0; i < 3; i++) {
+        g_cart.p0[i]    = p0[i];
+        g_cart.pf[i]    = pf[i];
+        g_cart.p_cur[i] = p0[i];
+        g_cart.v_cur[i] = 0.0f;
+    }
+    g_cart.T      = T;
+    g_cart.t      = 0.0f;
+    g_cart.active = 1;
+}
+
+void cart_Stop(void)
+{
+    g_cart.active = 0;
+}
+
+/* =========================================================
+ * 직교 궤적 — 1스텝 진행 (좌표만 계산, IK 없음)
+ *   각 축을 quintic으로 보간. t>T면 끝값 유지.
+ * ========================================================= */
+void cart_Update(void)
+{
+    if (!g_cart.active) return;
+
+    /* 경과 시간 진행 */
+    g_cart.t += CTRL_DT;
+
+    for (int i = 0; i < 3; i++) {
+        TrajPoint_t pt;
+        quintic_eval(g_cart.p0[i], g_cart.pf[i], g_cart.T, g_cart.t, &pt);
+        g_cart.p_cur[i] = pt.q;
+        g_cart.v_cur[i] = pt.qd;
+    }
+}
+
+/* =========================================================
+ * 직교 궤적 — 결과 읽기 (IK/송신측에서 사용)
+ * ========================================================= */
+uint8_t cart_IsActive(void)
+{
+    return g_cart.active;
+}
+
+void cart_GetTargetPos(float xyz[3])
+{
+    xyz[0] = g_cart.p_cur[0];
+    xyz[1] = g_cart.p_cur[1];
+    xyz[2] = g_cart.p_cur[2];
+}
+
+void cart_GetTargetVel(float vxyz[3])
+{
+    vxyz[0] = g_cart.v_cur[0];
+    vxyz[1] = g_cart.v_cur[1];
+    vxyz[2] = g_cart.v_cur[2];
+}
+
+uint8_t cart_IsFinished(void)
+{
+    if (!g_cart.active) return 0;
+    return (g_cart.t >= g_cart.T) ? 1 : 0;
 }

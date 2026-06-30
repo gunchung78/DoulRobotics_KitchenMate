@@ -3,7 +3,7 @@
  * @author geon lee (sweng.geon@gmail.com)
  * @brief USB CDC 명령어 파싱 및 모터 제어 명령 처리 구현부
  * @version 0.2
- * @date 2026-06-29
+ * @date 2026-06-30
  * 
  * @details
  * PC에서 USB CDC로 수신한 문자열 명령을 링버퍼에 저장하고,
@@ -23,6 +23,8 @@
 #include "axis.h"
 #include "kin_bridge.h"
 #include "pwm.h"
+
+#define RAD_TO_DEG 57.29578f;
 
 RS_Target_t g_target[MOTOR_COUNT] = {0};
 
@@ -244,6 +246,7 @@ static void cmd_ProcessLine(char* line)
             };
             float goal[3] = { q0_rad, q1_rad, j2_rad };
 
+            kin_StopCartesian();   /* Cartesian과 상호배제 */
             traj_StartAll(start, goal, T);
 
             snprintf(reply, sizeof(reply),
@@ -271,6 +274,7 @@ static void cmd_ProcessLine(char* line)
 
     if (strncmp(line, "D", 1) == 0 && line[1] == '\0')
     {
+        kin_StopCartesian();
         traj_StopAll();
         RS_MIT_Disable(&RS_J0);
         RS_MIT_Disable(&RS_J1);
@@ -315,6 +319,7 @@ static void cmd_ProcessLine(char* line)
                 };
                 float goal[3] = { tgt.j0_rad, tgt.j1_rad, tgt.j2_rad };
 
+                kin_StopCartesian();   /* Cartesian과 상호배제 */
                 traj_StartAll(start, goal, T);
 
                 snprintf(reply, sizeof(reply),
@@ -337,7 +342,85 @@ static void cmd_ProcessLine(char* line)
         return;
     }
 
-    if (strncmp(line, "IKTEST", 6) == 0)
+    /* ---- CMOVE: Cartesian 추종 시작 ---- */
+    if (strncmp(line, "CMOVE", 5) == 0)
+    {
+        float x, y, z, T;
+        if (sscanf(line + 5, "%f %f %f %f", &x, &y, &z, &T) == 4)
+        {
+            /* 관절 궤적과 상호배제 */
+            traj_StopAll();
+
+            float cur_j0    = RS_J0.feedback.Angle;
+            float cur_j1    = RS_J1.feedback.Angle;
+            float cur_j2_mm = axis_J2_GetContinuousMm();
+
+            kin_StartCartesian(x, y, z, T, cur_j0, cur_j1, cur_j2_mm);
+
+            snprintf(reply, sizeof(reply),
+                "CMOVE start: target=(%.1f %.1f %.1f) T=%.1f\r\n",
+                x, y, z, T);
+            s_auto_print = 1;
+        }
+        else
+        {
+            snprintf(reply, sizeof(reply),
+                "ERR: Usage: CMOVE <x_mm> <y_mm> <z_mm> <T>\r\n");
+        }
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+
+    /* ---- CSTOP: Cartesian 추종 정지 ---- */
+    if (strcmp(line, "CSTOP") == 0)
+    {
+        kin_StopCartesian();
+        CDC_Transmit_FS((uint8_t*)"CSTOP: cartesian runner idle\r\n", 30);
+        return;
+    }
+
+    /* ---- CSTAT: Cartesian 러너 상태 (실시간 진단) ---- */
+    if (strcmp(line, "CSTAT") == 0)
+    {
+        float jg[3];
+        uint8_t valid = kin_GetJointGoal(jg);
+        const char* st_str[3] = { "IDLE", "ACTIVE", "HOLD" };
+        KinRunState st = kin_GetRunState();
+
+        snprintf(reply, sizeof(reply),
+            "CSTAT: state=%s valid=%u err=%.2fmm\r\n"
+            "  goal J0=%.3f J1=%.3f J2=%.1fmm\r\n",
+            st_str[(int)st], valid, kin_GetTrackError(),
+            jg[0], jg[1], axis_J2_RadToMm(jg[2]));
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+
+    /* ---- STEPTEST: warm-start step IK 1회 점검 (모터 안 움직임) ---- */
+    if (strncmp(line, "STEPTEST", 8) == 0)
+    {
+        float x, y, z;
+        if (sscanf(line + 8, "%f %f %f", &x, &y, &z) == 3)
+        {
+            float cur_j2_mm = axis_J2_GetContinuousMm();
+            KinTarget_t tgt;
+            kin_SolveStepOnce(x, y, z, RS_J0.feedback.Angle,
+                              RS_J1.feedback.Angle, cur_j2_mm, &tgt);
+
+            snprintf(reply, sizeof(reply),
+                "STEP: ok=%d J0=%.3fdeg J1=%.3fdeg J2=%.1fmm err=%.2fmm\r\n",
+                tgt.ok,
+                tgt.j0_rad * 57.2958f,
+                tgt.j1_rad * 57.2958f,
+                axis_J2_RadToMm(tgt.j2_rad),
+                tgt.error_mm);
+        }
+        else snprintf(reply, sizeof(reply), "ERR: STEPTEST <x> <y> <z>\r\n");
+        CDC_Transmit_FS((uint8_t*)reply, strlen(reply));
+        return;
+    }
+	/* ---- IKTEST: IK 계산 1회 점검 (모터 안 움직임) ---- */
+	if (strncmp(line, "IKTEST", 6) == 0)
     {
         float x, y, z;
         if (sscanf(line + 6, "%f %f %f", &x, &y, &z) == 3)
@@ -481,9 +564,9 @@ void cmd_Update(void)
             "J1: A=%.2f V=%.2f T=%.2f\r\n"
             "J2: A=%.2f V=%.2f T=%.2f\r\n"
             "J2: A=%.2fmm  V=%.2fmm/s T=%.2f\r\n",
-            RS_J0.feedback.Angle, RS_J0.feedback.Speed, RS_J0.feedback.Torque,
-            RS_J1.feedback.Angle, RS_J1.feedback.Speed, RS_J1.feedback.Torque,
-            RS_J2.feedback.Angle, RS_J2.feedback.Speed, RS_J2.feedback.Torque,
+            RS_J0.feedback.Angle * RAD_TO_DEG, RS_J0.feedback.Speed, RS_J0.feedback.Torque,
+            RS_J1.feedback.Angle * RAD_TO_DEG, RS_J1.feedback.Speed, RS_J1.feedback.Torque,
+            RS_J2.feedback.Angle * RAD_TO_DEG, RS_J2.feedback.Speed, RS_J2.feedback.Torque,
             axis_J2_GetContinuousMm(),
             axis_J2_RadpsToMmps(RS_J2.feedback.Speed),
             RS_J2.feedback.Torque);

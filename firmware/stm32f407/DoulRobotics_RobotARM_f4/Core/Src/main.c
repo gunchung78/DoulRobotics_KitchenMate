@@ -38,6 +38,8 @@
 #include "axis.h"
 #include "servo_control.h"
 #include "pwm.h"
+#include "kin_bridge.h"
+
 
 /* USER CODE END Includes */
 
@@ -152,6 +154,7 @@ int main(void)
   while (1)
   {
     cmd_Update();
+    kin_RunnerUpdate();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -252,6 +255,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM2)
     {
         axis_J2_Update(RS_J2.feedback.Angle);
+        cart_Update();
+        if (kin_GetRunState() != KIN_RUN_IDLE) {
+            float jg[3];
+            if (kin_GetJointGoal(jg)) {
+                pd_SetGoal(0, jg[0]);
+                pd_SetGoal(1, jg[1]);
+                pd_SetGoal(2, jg[2]);
+            }
+        }
         traj_Update();
 
         for (int i = 0; i < MOTOR_COUNT; i++)

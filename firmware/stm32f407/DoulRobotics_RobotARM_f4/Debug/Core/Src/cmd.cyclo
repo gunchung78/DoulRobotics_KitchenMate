@@ -3,6 +3,6 @@
 ../Core/Src/cmd.c:60:6:cmd_SetAutoPrint	1
 ../Core/Src/cmd.c:66:6:cmd_RxPush	3
 ../Core/Src/cmd.c:82:13:cmd_CAN_Diagnostic	1
-../Core/Src/cmd.c:139:13:cmd_ProcessLine	38
-../Core/Src/cmd.c:435:13:cmd_DrainRing	6
-../Core/Src/cmd.c:465:6:cmd_Update	3
+../Core/Src/cmd.c:139:13:cmd_ProcessLine	44
+../Core/Src/cmd.c:515:13:cmd_DrainRing	6
+../Core/Src/cmd.c:545:6:cmd_Update	3
